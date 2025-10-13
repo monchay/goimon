@@ -65,8 +65,23 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 @keyframes blinkTime{0%,100%{color:#FFD700;text-shadow:2px 2px 6px rgba(0,0,0,.5)}50%{color:#F00;text-shadow:2px 2px 10px rgba(255,69,0,.8);transform:scale(1.1)}}
 @keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
-.password-input{background-color:rgba(0,0,0,.3);border:1px solid rgba(175,219,222,.3);color:#fff;padding:10px;border-radius:8px;width:80%;margin:15px auto 20px;font-size:1.2rem;text-align:center}
-.password-input:focus{outline:none;border-color:#FFD700}
+#staffControls { display: none; }
+
+/* === CSS CHO POPUP MẬT KHẨU MỚI === */
+.pin-inputs { display: flex; gap: 10px; justify-content: center; margin: 20px 0; }
+.pin-digit {
+    width: 45px; height: 55px;
+    text-align: center; font-size: 1.5rem; font-weight: bold;
+    background-color: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(175, 219, 222, 0.3);
+    color: white;
+    border-radius: 8px;
+    -moz-appearance: textfield;
+}
+.pin-digit::-webkit-outer-spin-button, .pin-digit::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.pin-digit:focus { outline: none; border-color: #FFD700; }
+/* ==================================== */
+
 @media (min-width:1920px){.order-grid{gap:8px}.order-row{padding:5px 9px;grid-template-columns:100px 60px 1fr;gap:15px;min-height:28px}.time,.table-number,.quantity{font-size:1.3rem}.dish{font-size:2rem;padding:-2px 0}.dish-note{font-size:1rem}}
 @media (max-width:768px){.container{padding:7px 4px 55px}.order-grid{grid-template-columns:1fr;gap:8px}.order-row{grid-template-columns:58px 55px 1fr;gap:8px;padding:3px 0;min-height:28px}.dish-item{grid-template-columns:30px 1fr}.time{font-size:1rem}.table-number{font-size:1.1rem}.quantity{font-size:1.2rem}.dish{font-size:1.2rem}.dish-note{font-size:.8rem;padding:0}.btn{font-size:.8rem;padding:8px}}
 @media (min-width:769px)and (max-width:1919px){.order-grid{grid-template-columns:1fr 1fr;column-gap:60px;row-gap:8px}.order-row{grid-template-columns:75px 70px 1fr;gap:12px}.dish-item{grid-template-columns:45px 1fr}.time,.table-number,.quantity{font-size:calc(.8rem + 8px)}.dish{font-size:calc(.9rem + 8px)}.dish-note{font-size:calc(.7rem + 8px)}.modal-content{height:80vh;margin:10vh auto}}
@@ -79,7 +94,21 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 <div class="controls" id="staffControls"><button class="btn" onclick="addNewOrder()">&#10133; Thêm đơn mới</button></div>
 <div id="tableModal" class="modal"><div class="modal-content"><span class="close-btn" onclick="closeModal()">&times;</span><h2>Chọn bàn để đặt món</h2><div class="table-selection-grid"></div></div></div>
 <div id="customConfirmModal" class="modal"><div class="confirm-modal-content"><p id="confirmMessage">Đơn hàng này đã hoàn thành, bạn muốn xóa?</p><div class="confirm-buttons"><button id="confirmYesBtn" class="btn-confirm btn-yes">Yes</button><button id="confirmNoBtn" class="btn-confirm btn-no">No</button></div></div></div>
-<div id="passwordModal" class="modal"><div class="confirm-modal-content"><p>Vui lòng nhập mật khẩu</p><input type="password" id="passwordInput" class="password-input" autofocus><div class="confirm-buttons"><button id="passwordConfirmBtn" class="btn-confirm btn-yes">Xác nhận</button></div></div></div>
+
+<div id="passwordModal" class="modal">
+    <div class="confirm-modal-content">
+        <p>Vui lòng nhập mật khẩu</p>
+        <div class="pin-inputs" id="pinInputs">
+            <input type="number" class="pin-digit" maxlength="1">
+            <input type="number" class="pin-digit" maxlength="1">
+            <input type="number" class="pin-digit" maxlength="1">
+            <input type="number" class="pin-digit" maxlength="1">
+        </div>
+        <div class="confirm-buttons">
+            <button id="passwordCancelBtn" class="btn-confirm btn-no">Hủy</button>
+        </div>
+    </div>
+</div>
 <script>
 const CFG={URL:'https://script.google.com/macros/s/AKfycbz0kwAmsEejvJRTdr8Wt5ya44kn7cfRrLSgI9bJZV36kuXO5uRpKHn9yKNEzR81Tjs3lA/exec',ORDER:'https://anchay.vercel.app/',REFRESH:60000,UPDATE:50000,MAX_MIN:15,CACHE_KEY:'offlineOrders',CACHE_TIME:'cacheTime',CACHE_TTL:120000};
 const urlParams=new URLSearchParams(window.location.search);
@@ -88,17 +117,18 @@ let autoRefresh,orders=[],orderCache=new Map(),isFetching=false,currentUserRole=
 const modal=document.getElementById('tableModal');
 
 async function login(){
-    const password=await showPasswordPrompt();
-    if(!password){
-        alert("Bạn cần nhập mật khẩu để có thể xóa đơn hàng.");
+    const pin = await showPasswordPrompt();
+    if(!pin){ // Nếu người dùng hủy hoặc không nhập
         currentUserRole=null;
         return;
     }
-    switch(password){
-        case'Admin':currentUserRole='Admin';break;
-        case'111':currentUserRole='Taicho';break;
-        case'222':currentUserRole='Muave';break;
-        default:alert("Mật khẩu không đúng. Bạn có thể xem đơn hàng nhưng không thể xóa.");currentUserRole=null;
+    switch(pin){
+        case '9999': currentUserRole='Admin'; break; // Mật khẩu mới
+        case '1111': currentUserRole='Taicho'; break; // Mật khẩu mới
+        case '2222': currentUserRole='Muave'; break; // Mật khẩu mới
+        default:
+            alert("Mật khẩu không đúng. Bạn có thể xem đơn hàng nhưng không thể xóa.");
+            currentUserRole=null;
     }
 }
 
@@ -272,24 +302,54 @@ function showConfirm(msg){
     });
 }
 
-function showPasswordPrompt(){
-    return new Promise((resolve)=>{
-        const modal=document.getElementById('passwordModal');
-        const input=document.getElementById('passwordInput');
-        const confirmBtn=document.getElementById('passwordConfirmBtn');
-        modal.style.display='block';
-        input.value='';
-        input.focus();
-        const close=(value)=>{
-            modal.style.display='none';
-            confirmBtn.onclick=null;
-            input.onkeydown=null;
+// === HÀM POPUP MẬT KHẨU ĐÃ SỬA HOÀN CHỈNH ===
+function showPasswordPrompt() {
+    return new Promise((resolve) => {
+        const modal = document.getElementById('passwordModal');
+        const inputs = Array.from(modal.querySelectorAll('.pin-digit'));
+        const cancelBtn = document.getElementById('passwordCancelBtn');
+        
+        modal.style.display = 'block';
+        inputs.forEach(input => input.value = '');
+        inputs[0].focus();
+
+        const close = (value) => {
+            modal.style.display = 'none';
             resolve(value);
         };
-        confirmBtn.onclick=()=>{close(input.value);};
-        input.onkeydown=(e)=>{if(e.key==='Enter'){close(input.value);}};
+
+        const handleInput = (e) => {
+            const input = e.target;
+            const index = inputs.indexOf(input);
+            
+            if (input.value && index < inputs.length - 1) {
+                inputs[index + 1].focus();
+            }
+            
+            if (inputs.every(i => i.value)) {
+                const pin = inputs.map(i => i.value).join('');
+                close(pin);
+            }
+        };
+        
+        const handleKeydown = (e) => {
+            if (e.key === 'Backspace') {
+                const index = inputs.indexOf(e.target);
+                if (e.target.value === '' && index > 0) {
+                    inputs[index - 1].focus();
+                }
+            }
+        };
+
+        inputs.forEach(input => {
+            input.addEventListener('input', handleInput);
+            input.addEventListener('keydown', handleKeydown);
+        });
+
+        cancelBtn.onclick = () => close(null);
     });
 }
+// ============================================
 
 async function deleteOrder(id,el,e){
     e.stopPropagation();
@@ -335,7 +395,7 @@ function setupKitchen(){
 }
 
 function setupStaff(){
-    document.getElementById('staffControls').style.display='flex';
+    document.getElementById('staffControls').style.setProperty('display', 'flex', 'important');
 }
 
 function setupFullscreenMode(){
@@ -393,26 +453,32 @@ function setupFullscreenMode(){
     },{passive:true});
 }
 
-function init(){
-    login();
-    const cached=getCached();
+// === HÀM INIT ĐÃ SỬA HOÀN CHỈNH ===
+async function init(){
+    await login(); // Đảm bảo login chạy xong trước
+    
+    const cached = getCached();
     if(cached){
-        orders=cached;
+        orders = cached;
         displayOrders(orders);
-    }else{
+    } else {
         showLoading();
     }
+    
     if(isKitchen){
         setupKitchen();
-    }else if(currentUserRole){
+    } else if(currentUserRole){ // Chỉ hiện nút khi đã đăng nhập thành công
         setupStaff();
     }
+    
     fetchOrders();
-    setInterval(updateTimes,CFG.UPDATE);
-    setInterval(fetchOrders,CFG.REFRESH);
+    setInterval(updateTimes, CFG.UPDATE);
+    setInterval(fetchOrders, CFG.REFRESH);
+    
     setupBackButtonHandler();
     setupFullscreenMode();
 }
+// ===================================
 
 if('serviceWorker' in navigator){
     navigator.serviceWorker.register('/sw.js').catch(err=>{
@@ -422,7 +488,9 @@ if('serviceWorker' in navigator){
 
 window.onclick=(e)=>{
     if(e.target==modal)closeModal();
-    if(e.target==document.getElementById('passwordModal'))document.getElementById('passwordModal').style.display='none';
+    // === SỬA LẠI ĐỂ KHÔNG TỰ ĐỘNG ĐÓNG KHI NHẤN RA NGOÀI ===
+    // Dòng dưới đây đã được vô hiệu hóa để người dùng phải nhấn Hủy
+    // if(e.target==document.getElementById('passwordModal'))document.getElementById('passwordModal').style.display='none';
 };
 
 window.addEventListener('popstate',function(event){
@@ -447,15 +515,12 @@ window.addEventListener('popstate',function(event){
 },false);
 
 window.addEventListener('beforeunload',function(e){},false);
-
 document.addEventListener('contextmenu',e=>e.preventDefault());
-
 document.addEventListener('touchend',(e)=>{
     const now=Date.now();
     if(now-lastTouch<=300)e.preventDefault();
     lastTouch=now;
 });
-
 document.addEventListener('keydown',(e)=>{
     if((e.key==='n'||e.key==='N')&&(e.ctrlKey||e.metaKey)){
         e.preventDefault();
