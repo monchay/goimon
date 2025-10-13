@@ -827,10 +827,10 @@ const featuredBanner = document.querySelector('.featured-banner');
 if (featuredBanner) {
     featuredBanner.style.display = 'none';
 }
-           // Ẩn thanh điều hướng cuối trang
+           // Ẩn thanh điều hướng cuối trang (với !important)
             const bottomNav = document.querySelector('.bottom-nav');
             if (bottomNav) {
-                bottomNav.style.display = 'none';
+                bottomNav.style.setProperty('display', 'none', 'important');
             }
             const orderBtn = document.getElementById('onlineOrderBtn');
             if(orderBtn){
