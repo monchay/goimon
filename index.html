@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Đơn Hàng</title>
+<title>Gọi Món</title>
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#003D40">
 <meta name="application-name" content="Đơn Hàng TV">
@@ -13,528 +13,273 @@
 <link rel="preconnect" href="https://script.google.com" crossorigin>
 <link rel="dns-prefetch" href="https://script.google.com">
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-html,body{height:100%;width:100%}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#003D40;color:#F0F0F0;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-overflow-scrolling:touch;min-height:100vh;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);-ms-overflow-style:none;scrollbar-width:none}
-::-webkit-scrollbar{display:none}
-.container{min-height:100vh;padding:15px 15px 80px;scroll-behavior:smooth}
-.order-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;max-width:100%}
-.order-row{background:rgba(0,83,89,.35);border-radius:16px;padding:5px 3px;border:1px solid rgba(175,219,222,.2);transition:transform .3s;display:grid;grid-template-columns:50px 38px 1fr;align-items:center;gap:13px;cursor:pointer;min-height:24px;position:relative;will-change:transform}
-.order-row:hover{transform:translateY(-3px)scale(1.02);border-color:rgba(255,215,0,.6);background:rgba(0,83,89,.6)}
-.time{font-size:.672rem;font-weight:700;color:#FFECB3;text-shadow:2px 2px 6px rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;padding:2px 1px;white-space:nowrap;margin-top:5px}
-.table-number{font-size:.624rem;font-weight:700;color:#FF8F00;background:transparent;padding:3px 4px;text-align:center;white-space:nowrap;display:flex;align-items:center;justify-content:center;margin-top:5px}
-.table-number.takeaway{color:#fff}
-.dish-details-column{display:flex;flex-direction:column;gap:4px}
-.dish-item{position:relative;display:grid;grid-template-columns:30px 1fr;align-items:center;gap:8px}
-.dish-note{position:absolute;right:3px;top:0;bottom:0;display:flex;align-items:center;white-space:nowrap;text-align:right;pointer-events:none;font-size:.456rem;padding:4px 1px 1px;opacity:.95;color:#FFECB3;font-weight:500;font-style:italic}
-.dish-note:empty{display:none}
-.quantity{font-size:.624rem;font-weight:700;color:#FF8F00;background:transparent;padding:3px 4px;border-radius:12px;text-align:center;text-shadow:2px 2px 6px rgba(0,0,0,.4);min-width:20px}
-.dish{background:linear-gradient(135deg,rgba(255,255,255,.1),rgba(255,255,255,.05));padding:3px 6px;border-radius:12px;font-size:.72rem;font-weight:700;border:1px solid rgba(255,255,255,.15);text-shadow:2px 2px 6px rgba(0,0,0,.4);white-space:nowrap;color:#F0F0F0;z-index:1}
-.controls{position:fixed;bottom:10px;right:20px;display:none;gap:18px;z-index:1000;flex-direction:column;align-items:flex-end}
-.is-pwa .controls{bottom:20px}
-.btn{background:linear-gradient(135deg,rgba(0,121,107,.5),rgba(0,77,64,.4));border:2px solid rgba(175,219,222,.4);color:#fff;padding:6px;border-radius:30px;cursor:pointer;font-size:.5rem;font-weight:600;transition:all .3s;-webkit-tap-highlight-color:transparent}
-.btn:active{background:linear-gradient(135deg,rgba(0,121,107,.7),rgba(0,77,64,.6))}
-.modal{display:none;position:fixed;z-index:2000;inset:0;overflow:auto;background-color:rgba(0,0,0,.7)}
-.modal-content{background:#003D40;border:2px solid rgba(175,219,222,.3);padding:12px 4px;border-radius:20px;width:80%;max-width:420px;text-align:center;position:relative;height:60vh;margin:30vh auto;display:flex;flex-direction:column}
-.modal-content h2{margin-bottom:10px;font-size:1.5rem;font-weight:700;text-shadow:2px 2px 6px rgba(0,0,0,.4)}
-.close-btn{color:rgba(255,255,255,.7);position:absolute;top:10px;right:10px;font-size:18px;font-weight:300;cursor:pointer;transition:all .3s ease;border-radius:50%;width:16px;height:16px;display:flex;align-items:center;justify-content:center}
-.close-btn:hover{color:#fff;background:rgba(255,255,255,.1);transform:scale(1.1)}
-.table-selection-grid{display:grid;margin-top:8px;overflow-y:auto;flex-grow:1;grid-template-columns:repeat(3,1fr);gap:5px;padding:0}
-.table-btn{background:linear-gradient(135deg,rgba(175,219,222,.15),rgba(175,219,222,.1));border:2px solid rgba(175,219,222,.25);color:#fff;cursor:pointer;font-size:2rem;font-weight:700;transition:all .3s;-webkit-tap-highlight-color:transparent;aspect-ratio:1/1;border-radius:12px;padding:0;display:flex;align-items:center;justify-content:center;width:70px;justify-self:center}
-.take-away-btn{font-size:1.2rem;line-height:1.2;padding:5px;background:linear-gradient(135deg,#FF8F00,#FF6F00)!important}
-.table-btn:active{background:linear-gradient(135deg,rgba(0,121,107,.8),rgba(0,77,64,.7));transform:translateY(-3px)scale(1.05)}
-.kitchen-mode .order-row{cursor:default!important}
-.kitchen-mode .order-row:hover{transform:none!important;border-color:rgba(175,219,222,.2)!important;background:rgba(0,83,89,.35)!important}
-.delete-btn{position:absolute;top:3px;left:3px;width:18px;height:18px;background-color:red;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;cursor:pointer;z-index:10;transition:all .2s ease;opacity:0}
-.order-row:hover .delete-btn{opacity:1}
-.delete-btn:hover{background-color:#f00;transform:scale(1.1)}
-.order-row.deleting{transition:all .4s ease-out;opacity:0;transform:scale(.95)}
-@media (hover:none)and (pointer:coarse){.delete-btn{opacity:1}}
-.confirm-modal-content{background:#003D40;border:2px solid rgba(175,219,222,.3);padding:25px;border-radius:20px;width:90%;max-width:350px;text-align:center;position:relative;margin:40vh auto}
-.confirm-modal-content p{font-size:1.2rem;margin-bottom:25px;color:#F0F0F0;line-height:1.5}
-.confirm-buttons{display:flex;justify-content:center;gap:20px}
-.btn-confirm{border:none;padding:10px 30px;border-radius:20px;font-size:1rem;font-weight:700;cursor:pointer;transition:all .2s ease}
-.btn-yes{background-color:#D32F2F;color:#fff}
-.btn-yes:hover{background-color:#C62828;transform:scale(1.05)}
-.btn-no{background-color:#4f6a6b;color:#fff}
-.btn-no:hover{background-color:#618182;transform:scale(1.05)}
-.table-number.blink-table{animation:blinkTime 1.5s ease-in-out infinite}
-.loading-spinner{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:3000}
-.spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top:2px solid #FFD700;border-radius:50%;animation:spin 1s linear infinite}
-.loading-state{display:flex;justify-content:center;align-items:center;height:80vh;text-align:center;padding:20px;color:#FFD700;font-size:1.8rem;font-weight:700;animation:pulse 1.5s ease-in-out infinite}
-@keyframes blinkTime{0%,100%{color:#FFD700;text-shadow:2px 2px 6px rgba(0,0,0,.5)}50%{color:#F00;text-shadow:2px 2px 10px rgba(255,69,0,.8);transform:scale(1.1)}}
-@keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
-#staffControls { display: none; }
-
-/* === CSS CHO POPUP MẬT KHẨU MỚI === */
-.pin-inputs { display: flex; gap: 10px; justify-content: center; margin: 20px 0; }
-.pin-digit {
-    width: 45px; height: 55px;
-    text-align: center; font-size: 1.5rem; font-weight: bold;
-    background-color: rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(175, 219, 222, 0.3);
-    color: white;
-    border-radius: 8px;
-    -moz-appearance: textfield;
-}
-.pin-digit::-webkit-outer-spin-button, .pin-digit::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-.pin-digit:focus { outline: none; border-color: #FFD700; }
-/* ==================================== */
-
-@media (min-width:1920px){.order-grid{gap:8px}.order-row{padding:5px 9px;grid-template-columns:100px 60px 1fr;gap:15px;min-height:28px}.time,.table-number,.quantity{font-size:1.3rem}.dish{font-size:2rem;padding:-2px 0}.dish-note{font-size:1rem}}
-@media (max-width:768px){.container{padding:7px 4px 55px}.order-grid{grid-template-columns:1fr;gap:8px}.order-row{grid-template-columns:58px 55px 1fr;gap:8px;padding:3px 0;min-height:28px}.dish-item{grid-template-columns:30px 1fr}.time{font-size:1rem}.table-number{font-size:1.1rem}.quantity{font-size:1.2rem}.dish{font-size:1.2rem}.dish-note{font-size:.8rem;padding:0}.btn{font-size:.8rem;padding:8px}}
-@media (min-width:769px)and (max-width:1919px){.order-grid{grid-template-columns:1fr 1fr;column-gap:60px;row-gap:8px}.order-row{grid-template-columns:75px 70px 1fr;gap:12px}.dish-item{grid-template-columns:45px 1fr}.time,.table-number,.quantity{font-size:calc(.8rem + 8px)}.dish{font-size:calc(.9rem + 8px)}.dish-note{font-size:calc(.7rem + 8px)}.modal-content{height:80vh;margin:10vh auto}}
-@media (orientation:landscape)and (max-height:600px){.container{height:100vh;padding:4px 4px 36px}.order-row{padding:3px 5px}.modal-content{height:80vh;margin:10vh auto}}
+*{margin:0;padding:0;box-sizing:border-box}html,body{height:100%;width:100%}body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#003D40;color:#F0F0F0;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-overflow-scrolling:touch;min-height:100vh;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);-ms-overflow-style:none;scrollbar-width:none}::-webkit-scrollbar{display:none}.container{min-height:100vh;padding:15px 15px 80px;scroll-behavior:smooth}.order-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;max-width:100%}.order-row{background:rgba(0,83,89,.35);border-radius:16px;padding:5px 3px;border:0.05px solid rgba(200, 419, 444, .4);transition:transform .3s;display:grid;grid-template-columns:50px 38px 1fr;align-items:center;gap:13px;cursor:pointer;min-height:24px;position:relative;will-change:transform}.order-row:hover{transform:translateY(-3px)scale(1.02);border-color:rgba(255,215,0,.6);background:rgba(0,83,89,.6)}.time{font-size:.672rem;font-weight:700;color:#FFECB3;text-shadow:2px 2px 6px rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;padding:2px 1px;white-space:nowrap;margin-top:5px}.table-number{font-size:.624rem;font-weight:700;color:#FF8F00;background:0 0;padding:3px 4px;text-align:center;white-space:nowrap;display:flex;align-items:center;justify-content:center;margin-top:5px}.table-number.takeaway{color:#fff}.dish-details-column{display:flex;flex-direction:column;gap:4px}.dish-item{position:relative;display:grid;grid-template-columns:30px 1fr;align-items:center;gap:8px}.dish-note{position:absolute;right:3px;top:0;bottom:0;display:flex;align-items:center;white-space:nowrap;text-align:right;pointer-events:none;font-size:.456rem;padding:4px 1px 1px;opacity:.95;color:#FFECB3;font-weight:500;font-style:italic}.dish-note:empty{display:none}.quantity{font-size:.624rem;font-weight:700;color:#FF8F00;background:0 0;padding:3px 4px;border-radius:12px;text-align:center;text-shadow:2px 2px 6px rgba(0,0,0,.4);min-width:20px}.dish{padding:3px 6px;font-size:.72rem;font-weight:700;text-shadow:2px 2px 6px rgba(0,0,0,.4);white-space:nowrap;color:#F0F0F0;z-index:1}.controls{position:fixed;bottom:10px;right:20px;display:none;gap:18px;z-index:1000;flex-direction:column;align-items:flex-end}.is-pwa .controls{bottom:20px}.btn{background:linear-gradient(135deg,rgba(0,121,107,.5),rgba(0,77,64,.4));border:2px solid rgba(175,219,222,.4);color:#fff;padding:6px;border-radius:30px;cursor:pointer;font-size:.5rem;font-weight:600;transition:all .3s;-webkit-tap-highlight-color:transparent}.btn:active{background:linear-gradient(135deg,rgba(0,121,107,.7),rgba(0,77,64,.6))}.modal{display:none;position:fixed;z-index:2000;inset:0;overflow:auto;background-color:rgba(0,0,0,.7)}.modal-content{background:#003D40;border:2px solid rgba(175,219,222,.3);padding:12px 4px;border-radius:20px;width:80%;max-width:420px;text-align:center;position:relative;height:60vh;margin:30vh auto;display:flex;flex-direction:column}.modal-content h2{margin-bottom:10px;font-size:1.5rem;font-weight:700;text-shadow:2px 2px 6px rgba(0,0,0,.4)}.close-btn{color:rgba(255,255,255,.7);position:absolute;top:10px;right:10px;font-size:18px;font-weight:300;cursor:pointer;transition:all .3s ease;border-radius:50%;width:16px;height:16px;display:flex;align-items:center;justify-content:center}.close-btn:hover{color:#fff;background:rgba(255,255,255,.1);transform:scale(1.1)}.table-selection-grid{display:grid;margin-top:8px;overflow-y:auto;flex-grow:1;grid-template-columns:repeat(3,1fr);gap:5px;padding:0}.table-btn{background:linear-gradient(135deg,rgba(175,219,222,.15),rgba(175,219,222,.1));border:2px solid rgba(175,219,222,.25);color:#fff;cursor:pointer;font-size:2rem;font-weight:700;transition:all .3s;-webkit-tap-highlight-color:transparent;aspect-ratio:1/1;border-radius:12px;padding:0;display:flex;align-items:center;justify-content:center;width:70px;justify-self:center}.take-away-btn{font-size:1.2rem;line-height:1.2;padding:5px;background:linear-gradient(135deg,#FF8F00,#FF6F00)!important}.table-btn:active{background:linear-gradient(135deg,rgba(0,121,107,.8),rgba(0,77,64,.7));transform:translateY(-3px)scale(1.05)}.kitchen-mode .order-row{cursor:default!important}.kitchen-mode .order-row:hover{transform:none!important;border-color:rgba(175,219,222,.2)!important;background:rgba(0,83,89,.35)!important}.delete-btn{position:absolute;top:0px;left:3px;width:16px;height:16px;background-color:red;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;cursor:pointer;z-index:10;transition:all .2s ease;opacity:0}.order-row:hover .delete-btn{opacity:1}.delete-btn:hover{background-color:#f00;transform:scale(1.1)}.order-row.deleting{transition:all .4s ease-out;opacity:0;transform:scale(.95)}@media (hover:none)and (pointer:coarse){.delete-btn{opacity:1}}.confirm-modal-content{background:#003D40;border:2px solid rgba(175,219,222,.3);padding:20px;border-radius:20px;width:90%;max-width:350px;text-align:center;position:relative;margin:40vh auto}.confirm-modal-content p{font-size:1.2rem;margin-bottom:25px;color:#F0F0F0;line-height:1.5}.confirm-buttons{display:flex;justify-content:center;gap:20px}.btn-confirm{border:none;padding:10px 30px;border-radius:20px;font-size:1rem;font-weight:700;cursor:pointer;transition:all .2s ease}.btn-yes{background-color:#D32F2F;color:#fff}.btn-yes:hover{background-color:#C62828;transform:scale(1.05)}.btn-no{background-color:#4f6a6b;color:#fff}.btn-no:hover{background-color:#618182;transform:scale(1.05)}.table-number.blink-table{animation:blinkTime 1.5s ease-in-out infinite}.loading-spinner{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:3000}.spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top:2px solid #FFD700;border-radius:50%;animation:spin 1s linear infinite}.loading-state{display:flex;justify-content:center;align-items:center;height:80vh;text-align:center;padding:20px;color:#FFD700;font-size:1.8rem;font-weight:700;animation:pulse 1.5s ease-in-out infinite}@keyframes blinkTime{0%,100%{color:#FFD700;text-shadow:2px 2px 6px rgba(0,0,0,.5)}50%{color:#F00;text-shadow:2px 2px 10px rgba(255,69,0,.8);transform:scale(1.1)}}@keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}#staffControls{display:none}.pin-inputs{display:flex;gap:10px;justify-content:center;margin:20px 0}.pin-digit{width:45px;height:55px;text-align:center;font-size:1.5rem;font-weight:700;background-color:rgba(0,0,0,.3);border:1px solid rgba(175,219,222,.3);color:#fff;border-radius:8px;-moz-appearance:textfield}.pin-digit::-webkit-outer-spin-button,.pin-digit::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}.pin-digit:focus{outline:0;border-color:#FFD700}@media (min-width:1920px){.order-grid{gap:8px}.order-row{padding:5px 9px;grid-template-columns:100px 60px 1fr;gap:15px;min-height:28px}.time,.table-number,.quantity{font-size:1.3rem}.dish{font-size:2rem;padding:-2px 0}.dish-note{font-size:1rem}}@media (max-width:768px){.container{padding:7px 4px 55px}.order-grid{grid-template-columns:1fr;gap:8px}.order-row{grid-template-columns:58px 55px 1fr;gap:8px;padding:3px 0;min-height:28px}.dish-item{grid-template-columns:30px 1fr}.time{font-size:1rem}.table-number{font-size:1.1rem}.quantity{font-size:1.2rem}.dish{font-size:1.2rem}.dish-note{font-size:.8rem;padding:0}.btn{font-size:.8rem;padding:8px}}@media (min-width:769px)and (max-width:1919px){.order-grid{grid-template-columns:1fr 1fr;column-gap:60px;row-gap:8px}.order-row{grid-template-columns:75px 70px 1fr;gap:12px}.dish-item{grid-template-columns:45px 1fr}.time,.table-number,.quantity{font-size:calc(.8rem + 8px)}.dish{font-size:calc(.9rem + 8px)}.dish-note{font-size:calc(.7rem + 8px)}.modal-content{height:80vh;margin:10vh auto}}@media (orientation:landscape)and (max-height:600px){.container{height:100vh;padding:4px 4px 36px}.order-row{padding:3px 5px}.modal-content{height:80vh;margin:10vh auto}}
 </style>
 </head>
 <body>
-<div class="loading-spinner" id="loadingSpinner"><div class="spinner"></div></div>
-<div class="container"><div id="ordersList" class="order-grid"></div></div>
-<div class="controls" id="staffControls"><button class="btn" onclick="addNewOrder()">&#10133; Thêm đơn mới</button></div>
-<div id="tableModal" class="modal"><div class="modal-content"><span class="close-btn" onclick="closeModal()">&times;</span><h2>Chọn bàn để đặt món</h2><div class="table-selection-grid"></div></div></div>
-<div id="customConfirmModal" class="modal"><div class="confirm-modal-content"><p id="confirmMessage">Đơn hàng này đã hoàn thành, bạn muốn xóa?</p><div class="confirm-buttons"><button id="confirmYesBtn" class="btn-confirm btn-yes">Yes</button><button id="confirmNoBtn" class="btn-confirm btn-no">No</button></div></div></div>
-
-<div id="passwordModal" class="modal">
-    <div class="confirm-modal-content">
-        <p>Vui lòng nhập mật khẩu</p>
-        <div class="pin-inputs" id="pinInputs">
-            <input type="number" class="pin-digit" maxlength="1">
-            <input type="number" class="pin-digit" maxlength="1">
-            <input type="number" class="pin-digit" maxlength="1">
-            <input type="number" class="pin-digit" maxlength="1">
-        </div>
-        <div class="confirm-buttons">
-            <button id="passwordCancelBtn" class="btn-confirm btn-no">Hủy</button>
-        </div>
-    </div>
-</div>
+<div class="loading-spinner" id="s"><div class="spinner"></div></div>
+<div class="container"><div id="l" class="order-grid"></div></div>
+<div class="controls" id="c"><button class="btn" onclick="n()">&#10133; Thêm đơn mới</button></div>
+<div id="m" class="modal"><div class="modal-content"><span class="close-btn" onclick="C()">&times;</span><h2>Chọn bàn để đặt món</h2><div class="table-selection-grid"></div></div></div>
+<div id="cm" class="modal"><div class="confirm-modal-content"><p id="cmt">Đã hoàn thành, bạn muốn xóa ?</p><div class="confirm-buttons"><button id="y" class="btn-confirm btn-yes">Yes</button><button id="no" class="btn-confirm btn-no">No</button></div></div></div>
+<div id="pm" class="modal"><div class="confirm-modal-content"><p>Vui lòng nhập mật khẩu</p><div class="pin-inputs" id="pi"><input type="number" class="pin-digit" maxlength="1"><input type="number" class="pin-digit" maxlength="1"><input type="number" class="pin-digit" maxlength="1"><input type="number" class="pin-digit" maxlength="1"></div><div class="confirm-buttons"><button id="pc" class="btn-confirm btn-no">Hủy</button></div></div></div>
 <script>
-const CFG={URL:'https://script.google.com/macros/s/AKfycbz0kwAmsEejvJRTdr8Wt5ya44kn7cfRrLSgI9bJZV36kuXO5uRpKHn9yKNEzR81Tjs3lA/exec',ORDER:'https://anchay.vercel.app/',REFRESH:60000,UPDATE:50000,MAX_MIN:15,CACHE_KEY:'offlineOrders',CACHE_TIME:'cacheTime',CACHE_TTL:120000};
-const urlParams=new URLSearchParams(window.location.search);
-const isKitchen=urlParams.get('mode')==='kitchen';
-let autoRefresh,orders=[],orderCache=new Map(),isFetching=false,currentUserRole=null,modalLoaded=false,isModalOpen=false,lastTouch=0;
-const modal=document.getElementById('tableModal');
+const U='https://script.google.com/macros/s/AKfycbz0kwAmsEejvJRTdr8Wt5ya44kn7cfRrLSgI9bJZV36kuXO5uRpKHn9yKNEzR81Tjs3lA/exec',O='https://anchay.vercel.app/',R=6e4,T=5e4,M=15,K='offlineOrders',KT='cacheTime',TL=12e4;
+const p=new URLSearchParams(window.location.search),k=p.get('mode')==='kitchen';
+let a,o=[],oc=new Map(),f=!1,r=null,ml=!1,mo=!1,lt=0;
+const m=document.getElementById('m'),l=document.getElementById('l'),s=document.getElementById('s'),c=document.getElementById('c'),cm=document.getElementById('cm'),cmt=document.getElementById('cmt'),y=document.getElementById('y'),no=document.getElementById('no'),bc=document.querySelector('.confirm-buttons');
 
-async function login(){
-    const pin = await showPasswordPrompt();
-    if(!pin){ // Nếu người dùng hủy hoặc không nhập
-        currentUserRole=null;
-        return;
-    }
-    switch(pin){
-        case '9999': currentUserRole='Admin'; break; // Mật khẩu mới
-        case '1111': currentUserRole='Taicho'; break; // Mật khẩu mới
-        case '2222': currentUserRole='Muave'; break; // Mật khẩu mới
-        default:
-            alert("Mật khẩu không đúng. Bạn có thể xem đơn hàng nhưng không thể xóa.");
-            currentUserRole=null;
-    }
+async function L(){
+const v=await P();
+if(!v){r=null;return}
+r=v==='8899'?'Admin':v==='1111'?'Taicho':v==='0000'?'Muave':null;
+if(!r)A("Mật khẩu không đúng")
 }
 
-function createRow(o){
-    const dishDetailsHtml=o.dishes.map((dish,index)=>{
-        const quantity=o.quantities[index];
-        const note=o.notes[index];
-        const noteClass=note?'dish-note':'dish-note empty';
-        return `<div class="dish-item"><div class="quantity">${quantity}</div><div class="dish">${dish}</div><div class="${noteClass}">${note||''}</div></div>`;
-    }).join('');
-    const now=new Date();
-    const diffMin=Math.min(Math.max(0,Math.round((now-o.time)/60000)),CFG.MAX_MIN);
-    return `<div class="order-row" onclick="${isKitchen?'':'highlightOrder(this)'}"><span class="delete-btn" onclick="deleteOrder('${o.orderNumber}',this.parentElement,event)">×</span><div class="time" data-timestamp="${o.time.toISOString()}">${diffMin} phút</div><div class="table-number ${o.tableNumber==='Mua về'?'takeaway':''}">${o.tableNumber}</div><div class="dish-details-column">${dishDetailsHtml}</div></div>`;
-}
-
-function highlightOrder(el){
-    if(isKitchen)return;
-    el.style.transform='scale(1.02)';
-    el.style.background='rgba(0,105,92,0.7)';
-    setTimeout(()=>{el.style.transform='';el.style.background='';},200);
-}
-
-function displayOrders(ord){
-    const list=document.getElementById('ordersList');
-    const sorted=ord.sort((a,b)=>a.time-b.time);
-    const now=new Date();
-    const recent=sorted.filter(o=>(now-o.time)/60000<=15);
-    const old=sorted.filter(o=>(now-o.time)/60000>15);
-    const display=[...old.slice(-5),...recent];
-    list.innerHTML=display.map((o,i)=>{
-        const row=createRow(o);
-        return i<4?row.replace('class="table-number','class="table-number blink-table'):row;
-    }).join('');
-}
-
-function updateTimes(){
-    const now=new Date();
-    document.querySelectorAll('.time[data-timestamp]').forEach(t=>{
-        const ts=new Date(t.dataset.timestamp);
-        const min=Math.min(Math.max(0,Math.round((now-ts)/60000)),CFG.MAX_MIN);
-        t.textContent=`${min} phút`;
-    });
-}
-
-function getCached(){
-    try{
-        const time=localStorage.getItem(CFG.CACHE_TIME);
-        if(!time||Date.now()-parseInt(time)>CFG.CACHE_TTL)return null;
-        const data=localStorage.getItem(CFG.CACHE_KEY);
-        if(!data)return null;
-        const parsed=JSON.parse(data);
-        return parsed.map(o=>({...o,time:new Date(o.time)}));
-    }catch(e){
-        console.error('Cache error:',e);
-        return null;
-    }
-}
-
-function setCache(data){
-    try{
-        localStorage.setItem(CFG.CACHE_KEY,JSON.stringify(data));
-        localStorage.setItem(CFG.CACHE_TIME,Date.now().toString());
-    }catch(e){
-        console.error('Cache set error:',e);
-    }
-}
-
-function showLoading(){
-    document.getElementById('ordersList').innerHTML='<div class="loading-state">Hãy + Thêm đơn mới !';
-}
-
-async function fetchOrders(){
-    if(isFetching)return;
-    isFetching=true;
-    try{
-        const res=await fetch(`${CFG.URL}?action=getOfflineOrders`,{cache:'no-store'});
-        const data=await res.json();
-        if(!data||!data.length){
-            isFetching=false;
-            return;
-        }
-        const grouped={};
-        data.forEach(item=>{
-            if(!grouped[item.orderId]){
-                grouped[item.orderId]={time:new Date(item.time),orderNumber:item.orderId,tableNumber:item.tableNumber,quantities:[],dishes:[],notes:[]};
-            }
-            grouped[item.orderId].quantities.push(item.quantity);
-            grouped[item.orderId].dishes.push(item.dish);
-            grouped[item.orderId].notes.push(item.note);
-        });
-        orders=Object.values(grouped);
-        setCache(orders);
-        displayOrders(orders);
-    }catch(err){
-        console.error('Fetch error:',err);
-    }finally{
-        isFetching=false;
-    }
-}
-
-function loadModal(){
-    const grid=document.querySelector('.table-selection-grid');
-    grid.innerHTML=Array.from({length:14},(_,i)=>`<button class="table-btn" onclick="selectTable(${i+1})">${i+1}</button>`).join('')+`<button class="table-btn take-away-btn" onclick="selectTakeAway()">Mua về</button>`;
-    modalLoaded=true;
-}
-
-function openTableSelection(){
-    if(!modalLoaded)loadModal();
-    modal.style.display='block';
-    isModalOpen=true;
-    window.history.pushState({page:'modal'},'',window.location.href);
-}
-
-function selectTable(n){
-    showSpinner();
-    setTimeout(()=>{
-        window.open(`${CFG.ORDER}?table=${n}&mode=offline`,'_blank');
-        hideSpinner();
-        closeModal();
-    },500);
-}
-
-function selectTakeAway(){
-    showSpinner();
-    setTimeout(()=>{
-        window.open(`${CFG.ORDER}?table=takeaway&mode=offline`,'_blank');
-        hideSpinner();
-        closeModal();
-    },500);
-}
-
-function closeModal(){
-    modal.style.display='none';
-    isModalOpen=false;
-}
-
-function showSpinner(){document.getElementById('loadingSpinner').style.display='block';}
-function hideSpinner(){document.getElementById('loadingSpinner').style.display='none';}
-
-function addNewOrder(){
-    if(isKitchen)return;
-    if(navigator.vibrate)navigator.vibrate(50);
-    openTableSelection();
-}
-
-function setupBackButtonHandler(){
-    setTimeout(function(){
-        window.history.replaceState({page:'init'},'',window.location.href);
-        window.history.pushState({page:'home'},'',window.location.href);
-    },500);
-}
-
-function showConfirm(msg){
-    return new Promise((resolve)=>{
-        const m=document.getElementById('customConfirmModal');
-        const msgEl=document.getElementById('confirmMessage');
-        const yBtn=document.getElementById('confirmYesBtn');
-        const nBtn=document.getElementById('confirmNoBtn');
-        msgEl.textContent=msg;
-        m.style.display='block';
-        isModalOpen=true;
-        window.history.pushState({page:'confirm'},'',window.location.href);
-        const cleanup=()=>{
-            m.style.display='none';
-            isModalOpen=false;
-            yBtn.onclick=null;
-            nBtn.onclick=null;
-        };
-        yBtn.onclick=()=>{cleanup();resolve(true);};
-        nBtn.onclick=()=>{cleanup();resolve(false);};
-    });
-}
-
-// === HÀM POPUP MẬT KHẨU ĐÃ SỬA HOÀN CHỈNH ===
-function showPasswordPrompt() {
-    return new Promise((resolve) => {
-        const modal = document.getElementById('passwordModal');
-        const inputs = Array.from(modal.querySelectorAll('.pin-digit'));
-        const cancelBtn = document.getElementById('passwordCancelBtn');
-        
-        modal.style.display = 'block';
-        inputs.forEach(input => input.value = '');
-        inputs[0].focus();
-
-        const close = (value) => {
-            modal.style.display = 'none';
-            resolve(value);
-        };
-
-        const handleInput = (e) => {
-            const input = e.target;
-            const index = inputs.indexOf(input);
-            
-            if (input.value && index < inputs.length - 1) {
-                inputs[index + 1].focus();
-            }
-            
-            if (inputs.every(i => i.value)) {
-                const pin = inputs.map(i => i.value).join('');
-                close(pin);
-            }
-        };
-        
-        const handleKeydown = (e) => {
-            if (e.key === 'Backspace') {
-                const index = inputs.indexOf(e.target);
-                if (e.target.value === '' && index > 0) {
-                    inputs[index - 1].focus();
-                }
-            }
-        };
-
-        inputs.forEach(input => {
-            input.addEventListener('input', handleInput);
-            input.addEventListener('keydown', handleKeydown);
-        });
-
-        cancelBtn.onclick = () => close(null);
-    });
-}
-// ============================================
-
-async function deleteOrder(id,el,e){
-    e.stopPropagation();
-    const order=orders.find(o=>o.orderNumber===id);
-    if(!order){
-        alert("Lỗi: Không tìm thấy thông tin đơn hàng.");
-        return;
-    }
-    const tableNumber=order.tableNumber;
-    let hasPermission=false;
-    if(currentUserRole==='Admin'){
-        hasPermission=true;
-    }else if(currentUserRole==='Taicho'&&tableNumber.startsWith('Bàn')){
-        hasPermission=true;
-    }else if(currentUserRole==='Muave'&&tableNumber==='Mua về'){
-        hasPermission=true;
-    }
-    if(!hasPermission){
-        alert('Bạn không có quyền xóa đơn hàng này.');
-        return;
-    }
-    const ok=await showConfirm("Đơn hàng này đã hoàn thành, bạn muốn xóa?");
-    if(!ok)return;
-    el.classList.add('deleting');
-    setTimeout(()=>el.remove(),400);
-    try{
-        await fetch(CFG.URL,{
-            method:'POST',
-            mode:'no-cors',
-            headers:{'Content-Type':'text/plain;charset=utf-8'},
-            body:JSON.stringify({action:'markOrderAsCompleted',orderId:id})
-        });
-    }catch(err){
-        console.error('Delete error:',err);
-        alert('Có lỗi xảy ra khi xóa đơn hàng.');
-        el.classList.remove('deleting');
-    }
-}
-
-function setupKitchen(){
-    document.getElementById('staffControls').style.display='none';
-    document.body.classList.add('kitchen-mode');
-}
-
-function setupStaff(){
-    document.getElementById('staffControls').style.setProperty('display', 'flex', 'important');
-}
-
-function setupFullscreenMode(){
-    const isStandalone=window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone||document.referrer.includes('android-app://');
-    if(isStandalone){
-        document.body.classList.add('is-pwa');
-        return;
-    }
-    function triggerAddressBarHide(){
-        window.scrollTo(0,1);
-        setTimeout(()=>window.scrollTo(0,0),0);
-    }
-    function hideAddressBar(){
-        requestAnimationFrame(()=>{
-            requestAnimationFrame(()=>{
-                triggerAddressBarHide();
-            });
-        });
-    }
-    hideAddressBar();
-    window.addEventListener('load',()=>{
-        setTimeout(hideAddressBar,100);
-        setTimeout(hideAddressBar,300);
-        setTimeout(hideAddressBar,500);
-    });
-    let resizeTimer;
-    window.addEventListener('resize',()=>{
-        clearTimeout(resizeTimer);
-        resizeTimer=setTimeout(hideAddressBar,100);
-    });
-    window.addEventListener('orientationchange',()=>{
-        setTimeout(hideAddressBar,100);
-        setTimeout(hideAddressBar,500);
-    });
-    window.addEventListener('focus',hideAddressBar);
-    window.addEventListener('pageshow',hideAddressBar);
-    let scrollTimer;
-    window.addEventListener('scroll',()=>{
-        clearTimeout(scrollTimer);
-        scrollTimer=setTimeout(()=>{
-            if(window.scrollY<=5){
-                triggerAddressBarHide();
-            }
-        },150);
-    },{passive:true});
-    let touchStartY=0;
-    document.addEventListener('touchstart',(e)=>{
-        touchStartY=e.touches[0].clientY;
-    },{passive:true});
-    document.addEventListener('touchend',(e)=>{
-        const touchEndY=e.changedTouches[0].clientY;
-        if(touchEndY>touchStartY&&window.scrollY<=5){
-            setTimeout(hideAddressBar,100);
-        }
-    },{passive:true});
-}
-
-// === HÀM INIT ĐÃ SỬA HOÀN CHỈNH ===
-async function init(){
-    await login(); // Đảm bảo login chạy xong trước
-    
-    const cached = getCached();
-    if(cached){
-        orders = cached;
-        displayOrders(orders);
-    } else {
-        showLoading();
-    }
-    
-    if(isKitchen){
-        setupKitchen();
-    } else if(currentUserRole){ // Chỉ hiện nút khi đã đăng nhập thành công
-        setupStaff();
-    }
-    
-    fetchOrders();
-    setInterval(updateTimes, CFG.UPDATE);
-    setInterval(fetchOrders, CFG.REFRESH);
-    
-    setupBackButtonHandler();
-    setupFullscreenMode();
-}
-// ===================================
-
-if('serviceWorker' in navigator){
-    navigator.serviceWorker.register('/sw.js').catch(err=>{
-        console.log('ServiceWorker registration failed:',err);
-    });
-}
-
-window.onclick=(e)=>{
-    if(e.target==modal)closeModal();
-    // === SỬA LẠI ĐỂ KHÔNG TỰ ĐỘNG ĐÓNG KHI NHẤN RA NGOÀI ===
-    // Dòng dưới đây đã được vô hiệu hóa để người dùng phải nhấn Hủy
-    // if(e.target==document.getElementById('passwordModal'))document.getElementById('passwordModal').style.display='none';
+function A(mg){
+cmt.textContent=mg;
+y.textContent='Thoát';
+no.style.display='none';
+bc.style.justifyContent='center';
+cm.style.display='block';
+const cl=()=>{
+cm.style.display='none';
+y.textContent='Yes';
+no.style.display='';
+bc.style.justifyContent='';
+y.onclick=null
 };
+y.onclick=cl
+}
 
-window.addEventListener('popstate',function(event){
-    const tableModal=document.getElementById('tableModal');
-    const confirmModal=document.getElementById('customConfirmModal');
-    const passwordModal=document.getElementById('passwordModal');
-    const tableModalOpen=tableModal&&tableModal.style.display==='block';
-    const confirmModalOpen=confirmModal&&confirmModal.style.display==='block';
-    const passwordModalOpen=passwordModal&&passwordModal.style.display==='block';
-    if(tableModalOpen){
-        tableModal.style.display='none';
-        isModalOpen=false;
-    }else if(confirmModalOpen){
-        confirmModal.style.display='none';
-        isModalOpen=false;
-    }else if(passwordModalOpen){
-        passwordModal.style.display='none';
-    }
-    setTimeout(function(){
-        window.history.pushState({page:'home'},'',window.location.href);
-    },10);
-},false);
+function cr(o){
+const d=o.dishes.map((h,i)=>{
+const q=o.quantities[i],n=o.notes[i],nc=n?'dish-note':'dish-note empty';
+return`<div class="dish-item"><div class="quantity">${q}</div><div class="dish">${h}</div><div class="${nc}">${n||''}</div></div>`
+}).join('');
+const t=new Date(),dm=Math.min(Math.max(0,Math.round((t-o.time)/6e4)),M);
+return`<div class="order-row" onclick="${k?'':'h(this)'}"><span class="delete-btn" onclick="D('${o.orderNumber}',this.parentElement,event)">×</span><div class="time" data-timestamp="${o.time.toISOString()}">${dm} phút</div><div class="table-number ${o.tableNumber==='Mua về'?'takeaway':''}">${o.tableNumber}</div><div class="dish-details-column">${d}</div></div>`
+}
 
-window.addEventListener('beforeunload',function(e){},false);
+function h(e){
+if(k)return;
+e.style.transform='scale(1.02)';
+e.style.background='rgba(0,105,92,0.7)';
+setTimeout(()=>{e.style.transform='';e.style.background=''},200)
+}
+
+function d(x){
+const st=x.sort((a,b)=>a.time-b.time),t=new Date(),rc=st.filter(o=>(t-o.time)/6e4<=15),od=st.filter(o=>(t-o.time)/6e4>15),ds=[...od.slice(-5),...rc];
+l.innerHTML=ds.map((o,i)=>{
+const w=cr(o);
+return i<4?w.replace('class="table-number','class="table-number blink-table'):w
+}).join('')
+}
+
+function u(){
+const t=new Date();
+document.querySelectorAll('.time[data-timestamp]').forEach(e=>{
+const ts=new Date(e.dataset.timestamp),mn=Math.min(Math.max(0,Math.round((t-ts)/6e4)),M);
+e.textContent=`${mn} phút`
+})
+}
+
+function gc(){
+try{
+const t=localStorage.getItem(KT);
+if(!t||Date.now()-parseInt(t)>TL)return null;
+const dt=localStorage.getItem(K);
+if(!dt)return null;
+const ps=JSON.parse(dt);
+return ps.map(o=>({...o,time:new Date(o.time)}))
+}catch(e){return null}
+}
+
+function sc(dt){
+try{
+localStorage.setItem(K,JSON.stringify(dt));
+localStorage.setItem(KT,Date.now().toString())
+}catch(e){}
+}
+
+function sl(){l.innerHTML='<div class="loading-state">Hãy + Thêm đơn mới !'}
+
+async function F(){
+if(f)return;
+f=!0;
+try{
+const rs=await fetch(`${U}?action=getOfflineOrders`,{cache:'no-store'}),dt=await rs.json();
+if(!dt||!dt.length){f=!1;return}
+const g={};
+dt.forEach(i=>{
+if(!g[i.orderId])g[i.orderId]={time:new Date(i.time),orderNumber:i.orderId,tableNumber:i.tableNumber,quantities:[],dishes:[],notes:[]};
+g[i.orderId].quantities.push(i.quantity);
+g[i.orderId].dishes.push(i.dish);
+g[i.orderId].notes.push(i.note)
+});
+o=Object.values(g);
+sc(o);
+d(o)
+}catch(e){}finally{f=!1}
+}
+
+function lm(){
+const g=document.querySelector('.table-selection-grid');
+g.innerHTML=Array.from({length:14},(_,i)=>`<button class="table-btn" onclick="st(${i+1})">${i+1}</button>`).join('')+`<button class="table-btn take-away-btn" onclick="tw()">Mua về</button>`;
+ml=!0
+}
+
+function om(){
+if(!ml)lm();
+m.style.display='block';
+mo=!0;
+window.history.pushState({page:'modal'},'',window.location.href)
+}
+
+function st(n){
+ss();
+setTimeout(()=>{window.open(`${O}?table=${n}&mode=offline`,'_blank');hs();C()},500)
+}
+
+function tw(){
+ss();
+setTimeout(()=>{window.open(`${O}?table=takeaway&mode=offline`,'_blank');hs();C()},500)
+}
+
+function C(){m.style.display='none';mo=!1}
+
+function ss(){s.style.display='block'}
+function hs(){s.style.display='none'}
+
+function n(){
+if(k)return;
+if(navigator.vibrate)navigator.vibrate(50);
+om()
+}
+
+function sb(){
+setTimeout(()=>{
+window.history.replaceState({page:'init'},'',window.location.href);
+window.history.pushState({page:'home'},'',window.location.href)
+},500)
+}
+
+function sc2(mg){
+return new Promise((rv)=>{
+cmt.textContent=mg;
+cm.style.display='block';
+mo=!0;
+window.history.pushState({page:'confirm'},'',window.location.href);
+const cl=()=>{cm.style.display='none';mo=!1;y.onclick=null;no.onclick=null};
+y.onclick=()=>{cl();rv(!0)};
+no.onclick=()=>{cl();rv(!1)}
+})
+}
+
+function P(){
+return new Promise((rv)=>{
+const md=document.getElementById('pm'),ip=Array.from(md.querySelectorAll('.pin-digit')),cb=document.getElementById('pc');
+md.style.display='block';
+ip.forEach(i=>i.value='');
+ip[0].focus();
+const cl=(v)=>{md.style.display='none';rv(v)};
+const hi=(e)=>{
+const i=e.target,ix=ip.indexOf(i);
+if(i.value&&ix<ip.length-1)ip[ix+1].focus();
+if(ip.every(i=>i.value))cl(ip.map(i=>i.value).join(''))
+};
+const hk=(e)=>{
+if(e.key==='Backspace'){
+const ix=ip.indexOf(e.target);
+if(e.target.value===''&&ix>0)ip[ix-1].focus()
+}
+};
+ip.forEach(i=>{i.addEventListener('input',hi);i.addEventListener('keydown',hk)});
+cb.onclick=()=>cl(null)
+})
+}
+
+async function D(id,el,e){
+e.stopPropagation();
+const od=o.find(o=>o.orderNumber===id);
+if(!od){alert("Lỗi: Không tìm thấy thông tin đơn hàng.");return}
+const tn=od.tableNumber;
+let hp=!1;
+if(r==='Admin')hp=!0;
+else if(r==='Taicho'&&tn.startsWith('Bàn'))hp=!0;
+else if(r==='Muave'&&tn==='Mua về')hp=!0;
+if(!hp){A('Bạn KHÔNG có quyền xóa đơn này');return}
+const ok=await sc2("Đã hoàn thành, bạn muốn xóa ?");
+if(!ok)return;
+el.classList.add('deleting');
+setTimeout(()=>el.remove(),400);
+try{
+await fetch(U,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'markOrderAsCompleted',orderId:id})})
+}catch(e){alert('Có lỗi xảy ra khi xóa đơn hàng.');el.classList.remove('deleting')}
+}
+
+function sk(){c.style.display='none';document.body.classList.add('kitchen-mode')}
+
+function ss2(){c.style.setProperty('display','flex','important')}
+
+function sf(){
+const is=window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone||document.referrer.includes('android-app://');
+if(is){document.body.classList.add('is-pwa');return}
+function th(){window.scrollTo(0,1);setTimeout(()=>window.scrollTo(0,0),0)}
+function ha(){requestAnimationFrame(()=>requestAnimationFrame(th))}
+ha();
+window.addEventListener('load',()=>{setTimeout(ha,100);setTimeout(ha,300);setTimeout(ha,500)});
+let rt;
+window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(ha,100)});
+window.addEventListener('orientationchange',()=>{setTimeout(ha,100);setTimeout(ha,500)});
+window.addEventListener('focus',ha);
+window.addEventListener('pageshow',ha);
+let st;
+window.addEventListener('scroll',()=>{clearTimeout(st);st=setTimeout(()=>{if(window.scrollY<=5)th()},150)},{passive:!0});
+let ty=0;
+document.addEventListener('touchstart',(e)=>{ty=e.touches[0].clientY},{passive:!0});
+document.addEventListener('touchend',(e)=>{const te=e.changedTouches[0].clientY;if(te>ty&&window.scrollY<=5)setTimeout(ha,100)},{passive:!0})
+}
+
+async function I(){
+await L();
+const ca=gc();
+if(ca){o=ca;d(o)}else sl();
+if(k)sk();
+else if(r)ss2();
+F();
+setInterval(u,T);
+setInterval(F,R);
+sb();
+sf()
+}
+
+if('serviceWorker'in navigator)navigator.serviceWorker.register('/sw.js').catch(e=>{});
+
+window.onclick=(e)=>{if(e.target==m)C()};
+
+window.addEventListener('popstate',function(e){
+const tm=document.getElementById('m'),cm2=document.getElementById('cm'),pm2=document.getElementById('pm'),to=tm&&tm.style.display==='block',co=cm2&&cm2.style.display==='block',po=pm2&&pm2.style.display==='block';
+if(to){tm.style.display='none';mo=!1}
+else if(co){cm2.style.display='none';mo=!1}
+else if(po)pm2.style.display='none';
+setTimeout(()=>window.history.pushState({page:'home'},'',window.location.href),10)
+},!1);
+
+window.addEventListener('beforeunload',function(e){},!1);
 document.addEventListener('contextmenu',e=>e.preventDefault());
 document.addEventListener('touchend',(e)=>{
-    const now=Date.now();
-    if(now-lastTouch<=300)e.preventDefault();
-    lastTouch=now;
+const t=Date.now();
+if(t-lt<=300)e.preventDefault();
+lt=t
 });
 document.addEventListener('keydown',(e)=>{
-    if((e.key==='n'||e.key==='N')&&(e.ctrlKey||e.metaKey)){
-        e.preventDefault();
-        addNewOrder();
-    }else if(e.key==='Escape'){
-        closeModal();
-    }
+if((e.key==='n'||e.key==='N')&&(e.ctrlKey||e.metaKey)){e.preventDefault();n()}
+else if(e.key==='Escape')C()
 });
 
-if(document.readyState==='loading'){
-    document.addEventListener('DOMContentLoaded',init);
-}else{
-    init();
-}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',I);
+else I()
 </script>
 </body>
 </html>
